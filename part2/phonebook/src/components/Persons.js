@@ -5,7 +5,8 @@ const Persons = (props) => {
   return (
     <div>
       <div>{props.persons.filter(person => person.name.includes(props.filter)).map(filtered => 
-      <p key={filtered.name}>{filtered.name} {filtered.number}</p>)}</div>
+      <div key={filtered.name}>{filtered.name} {filtered.number}<button onClick={()=> props.handleDelete(filtered)}>delete</button></div>)}
+    </div>
     </div>
   )
 }

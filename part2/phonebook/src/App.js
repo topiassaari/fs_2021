@@ -1,67 +1,102 @@
-import React, { useState, useEffect } from 'react';
-import Filter from './components/Filter'
-import PersonForm from './components/PersonForm'
-import Persons from './components/Persons'
-import axios from "axios"
+import React, { useState, useEffect } from "react";
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import phoneService from "./services/phoneService";
+import Persons from "./components/Persons";
 
 const App = () => {
-  const [ persons, setPersons ] = useState([]) 
-  const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber ] = useState('')
-  const [ filterValue, setFilterValue ] = useState('')
+  const [persons, setPersons] = useState([]);
+  const [newName, setNewName] = useState("");
+  const [newNumber, setNewNumber] = useState("");
+  const [filterValue, setFilterValue] = useState("");
+
+  const fetchPersons = () => {
+    phoneService.getAll().then((response) => {
+      setPersons(response);
+    });
+  };
+
+  const updateNumber = (id, e) => {
+    var result = window.confirm(
+      `${newName} is already added to phonebook, replace the old number with new one?`
+    );
+    if (result === true) {
+      phoneService.update(id, e).then(() => fetchPersons());
+    }
+  };
+
+  const deletePerson = (e) => {
+    var result = window.confirm(`delete ${e.name}?`);
+    if (result === true) {
+      phoneService.removePerson(e).then(() => fetchPersons());
+    }
+  };
 
   useEffect(() => {
-    console.log("fetch");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      console.log("promise fulfilled");
-      setPersons(response.data);
-    });
+    fetchPersons();
   }, []);
 
-      
-    const addPerson = (e) => {
-    e.preventDefault()
+  const addPerson = (e) => {
+    e.preventDefault();
     const personObject = {
       name: newName,
       number: newNumber,
-    }
+    };
     var c = 0;
-    persons.forEach(e => {
-      if ((e.name === newName) || e.number === newNumber) {
+    persons.forEach((e) => {
+      if (e.name === newName || e.number === newNumber) {
         c += 1;
-      } 
-return c;
+      }
+      return c;
     });
 
     if (c === 0) {
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')
-      }
-      else {
-        window.alert(`${newName} is already added to phonebook`);
-      }
-  }
+      phoneService
+        .create(personObject)
+        .then((response) => setPersons(persons.concat(response)));
+      setNewName("");
+      setNewNumber("");
+    } else {
+      var id;
+      persons.forEach((e) => {
+        if (e.name === newName) {
+          id = e.id;
+        }
+      });
+      updateNumber(id, personObject);
+    }
+  };
+
   const handleNameChange = (event) => {
-    setNewName(event.target.value)
-  }
+    setNewName(event.target.value);
+  };
   const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-  }
+    setNewNumber(event.target.value);
+  };
   const handleFilterChange = (event) => {
-    setFilterValue(event.target.value)
-  }
+    setFilterValue(event.target.value);
+  };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter val={filterValue} changeValue={handleFilterChange}/>
+      <Filter val={filterValue} changeValue={handleFilterChange} />
       <h2>Add a new</h2>
-      <PersonForm name={newName} number={newNumber} submit={addPerson} nameChangeHanldler={handleNameChange} numberChangeHandler={handleNumberChange}/>
+      <PersonForm
+        name={newName}
+        number={newNumber}
+        submit={addPerson}
+        nameChangeHanldler={handleNameChange}
+        numberChangeHandler={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filterValue}/>
-</div>
-  )
-}
+      <Persons
+        persons={persons}
+        handleDelete={deletePerson}
+        filter={filterValue}
+      />
+    </div>
+  );
+};
 
-export default App
+export default App;

@@ -3,12 +3,15 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import phoneService from "./services/phoneService";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filterValue, setFilterValue] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const fetchPersons = () => {
     phoneService.getAll().then((response) => {
@@ -16,25 +19,41 @@ const App = () => {
     });
   };
 
+  useEffect(() => {
+    fetchPersons();
+  }, []);
+
   const updateNumber = (id, e) => {
     var result = window.confirm(
       `${newName} is already added to phonebook, replace the old number with new one?`
     );
     if (result === true) {
-      phoneService.update(id, e).then(() => fetchPersons());
+      phoneService.update(id, e).then(() => {
+        setSuccess(`Updated ${newName}`);
+        fetchPersons();
+        setTimeout(() => {
+          setSuccess(null);
+        }, 5000);
+      });
     }
   };
 
   const deletePerson = (e) => {
     var result = window.confirm(`delete ${e.name}?`);
     if (result === true) {
-      phoneService.removePerson(e).then(() => fetchPersons());
+      phoneService
+        .removePerson(e)
+        .then(() => fetchPersons())
+        .catch((error) => {
+          console.log(error);
+          setError(`User ${e.name} was already deleted.`);
+          setTimeout(() => {
+            fetchPersons();
+            setError(null);
+          }, 5000);
+        });
     }
   };
-
-  useEffect(() => {
-    fetchPersons();
-  }, []);
 
   const addPerson = (e) => {
     e.preventDefault();
@@ -51,11 +70,15 @@ const App = () => {
     });
 
     if (c === 0) {
-      phoneService
-        .create(personObject)
-        .then((response) => setPersons(persons.concat(response)));
-      setNewName("");
-      setNewNumber("");
+      phoneService.create(personObject).then((response) => {
+        setPersons(persons.concat(response));
+        setSuccess(`Added ${newName}`);
+        setTimeout(() => {
+          setSuccess(null);
+        }, 5000);
+        setNewName("");
+        setNewNumber("");
+      });
     } else {
       var id;
       persons.forEach((e) => {
@@ -79,6 +102,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification success={success} error={error} />
       <h2>Phonebook</h2>
       <Filter val={filterValue} changeValue={handleFilterChange} />
       <h2>Add a new</h2>

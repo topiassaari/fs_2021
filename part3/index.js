@@ -42,7 +42,7 @@ app.get("/info", (req, res) => {
 //get all
 app.get("/api/persons", (req, res) => {
   Person.find({}).then((persons) => {
-    res.json(persons);
+    res.json(persons.map(person => person.toJSON()));
   });
 });
 
@@ -50,7 +50,7 @@ app.get("/api/persons", (req, res) => {
 app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id)
     .then((person) => {
-      res.json(person);
+      res.json(person.toJSON());
     })
     .catch((error) => next(error));
 });
@@ -70,7 +70,7 @@ app.post("/api/persons", (req, res, next) => {
   person
     .save()
     .then((saved) => {
-      res.json(saved);
+      res.json(saved.toJSON());
     })
     .catch((error) => next(error));
 });
@@ -84,7 +84,7 @@ app.put("/api/notes/:id", (req, res, next) => {
 
   Person.findByIdAndUpdate(req.params.id, person, { new: true },{ runValidators: true, context: "query" })
     .then((updated) => {
-      res.json(updated);
+      res.json(updated.toJSON());
     })
     .catch((error) => next(error));
 });

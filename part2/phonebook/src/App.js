@@ -78,6 +78,11 @@ const App = () => {
         }, 5000);
         setNewName("");
         setNewNumber("");
+      }).catch(error => {
+        setError(error.response.data.error);
+        setTimeout(() => {
+          setError(null);
+        }, 5000);
       });
     } else {
       var id;

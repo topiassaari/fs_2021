@@ -92,14 +92,14 @@ const listWithNoLikes = [
     __v: 0,
   },
 ];
-
-test("dummy returns one", () => {
-  const blogs = [];
-  const result = listHelper.dummy(blogs);
-  expect(result).toBe(1);
+describe("dummy", () => {
+  test(" returns one", () => {
+    const blogs = [];
+    const result = listHelper.dummy(blogs);
+    expect(result).toBe(1);
+  });
 });
-
-describe("Total likes", () => {
+describe("total likes", () => {
   test("of a list are calculated correctly", () => {
     const result = listHelper.totalLikes(blogs);
     expect(result).toBe(36);
@@ -115,10 +115,14 @@ describe("Total likes", () => {
   });
 });
 
-describe("Favorite blog", () => {
+describe("favorite blog", () => {
   test("of a list is found correctly", () => {
     const result = listHelper.favoriteBlog(blogs);
-    expect(result).toEqual(blogs[2]);
+    expect(result).toEqual({
+      title: "Canonical string reduction",
+      author: "Edsger W. Dijkstra",
+      likes: 12,
+    });
   });
   test("of empty list is zero", () => {
     const result = listHelper.favoriteBlog([]);
@@ -131,7 +135,11 @@ describe("Favorite blog", () => {
 
   test(" of when list has only one blog, return that", () => {
     const result = listHelper.favoriteBlog(listWithOneBlog);
-    expect(result).toEqual(listWithOneBlog[0]);
+    expect(result).toEqual({
+      title: "Go To Statement Considered Harmful",
+      author: "Edsger W. Dijkstra",
+      likes: 5,
+    });
   });
 });
 describe("most blogs", () => {
@@ -146,5 +154,19 @@ describe("most blogs", () => {
   test(" of a empty list returns appropriate answer", () => {
     const result = listHelper.mostBlogs([]);
     expect(result).toEqual("there are no authors");
+  });
+});
+describe("most likes", () => {
+  test("of a list is found correctly", () => {
+    const result = listHelper.mostLikes(blogs);
+    expect(result).toEqual({ author: "Edsger W. Dijkstra", likes: 17 });
+  });
+  test(" of when list has only one blog, return that", () => {
+    const result = listHelper.mostLikes(listWithOneBlog);
+    expect(result).toEqual({ author: "Edsger W. Dijkstra", likes: 5 });
+  });
+  test(" when no likes, returns appropriate message", () => {
+    const result = listHelper.mostLikes(listWithNoLikes);
+    expect(result).toEqual("there are no likes");
   });
 });

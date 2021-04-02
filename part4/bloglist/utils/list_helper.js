@@ -1,3 +1,5 @@
+var _ = require("lodash");
+
 const dummy = (blogs) => {
   console.log(blogs);
   return 1;
@@ -19,9 +21,16 @@ const favoriteBlog = (blogs) => {
     ? "no favorites found"
     : blogs.find((a) => a.likes === mostLikes);
 };
+const mostBlogs = (blogs) => {
+  var names = _.map(blogs, "author");
+  var mostAuthor = _.chain(names).countBy().toPairs().max(_.last).value();
+  console.log(mostAuthor);
+  return { author: mostAuthor[0], blogs: mostAuthor[1] };
+};
 
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
 };

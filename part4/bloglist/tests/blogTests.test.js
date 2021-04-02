@@ -137,6 +137,14 @@ describe("Favorite blog", () => {
 describe("most blogs", () => {
   test("of a list is found correctly", () => {
     const result = listHelper.mostBlogs(blogs);
-    expect(result).toEqual({author:"Robert C. Martin", blogs: 3});
+    expect(result).toEqual({ author: "Robert C. Martin", blogs: 3 });
+  });
+  test(" of when list has only one blog, return that", () => {
+    const result = listHelper.mostBlogs(listWithOneBlog);
+    expect(result).toEqual({ author: "Edsger W. Dijkstra", blogs: 1 });
+  });
+  test(" of a empty list returns appropriate answer", () => {
+    const result = listHelper.mostBlogs([]);
+    expect(result).toEqual("there are no authors");
   });
 });

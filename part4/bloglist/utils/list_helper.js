@@ -25,7 +25,9 @@ const mostBlogs = (blogs) => {
   var names = _.map(blogs, "author");
   var mostAuthor = _.chain(names).countBy().toPairs().max(_.last).value();
   console.log(mostAuthor);
-  return { author: mostAuthor[0], blogs: mostAuthor[1] };
+  return mostAuthor === undefined
+    ? "there are no authors"
+    : { author: mostAuthor[0], blogs: mostAuthor[1] };
 };
 
 module.exports = {

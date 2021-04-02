@@ -1,100 +1,106 @@
+//imports
+const Person = require("./models/persons");
 const express = require("express");
-var morgan = require("morgan");
+const app = express();
 const cors = require("cors");
-morgan.token("content", function (req, res) {
+const morgan = require("morgan");
+require("dotenv").config();
+
+morgan.token("content", function (req) {
   return JSON.stringify(req.body);
 });
-const app = express();
+//set up express
 app.use(express.json());
 app.use(express.static("build"));
 app.use(morgan(":method :url :response-time :content"));
 app.use(cors());
 
-let persons = [
-  {
-    name: "Arto Hellas",
-    number: "040-123456",
-    id: 1,
-  },
-  {
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-    id: 2,
-  },
-  {
-    name: "Dan Abramov",
-    number: "12-43-234345",
-    id: 3,
-  },
-  {
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-    id: 4,
-  },
-];
-
-app.get("/info", (req, res) => {
-  var info =
-    "<p>Phonebook has info for " + persons.length + "</p> <p>" + Date();
-  res.send(info);
-});
-
-app.get("/api/persons", (req, res) => {
-  res.json(persons);
-});
-
-const randomID = () => {
-  const min = Math.ceil(1);
-  const max = Math.floor(1000);
-  const newID = Math.floor(Math.random() * (max - min) + min);
-  while (persons.find((person) => person.id === newID)) {
-    newID = Math.floor(Math.random() * (max - min) + min);
+//handle errors
+const errorHandler = (error, _req, res, next) => {
+  console.error(error.message);
+  if (error.name === "CastError") {
+    return res.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message });
   }
-  return newID;
+
+  next(error);
 };
 
-app.post("/api/persons", (req, res) => {
-  const body = req.body;
-  if (!body.name || !body.number) {
-    return res.status(400).json({
-      error: "Please fill name and number",
-    });
-  }
+//get info of phonebook
+app.get("/info", (req, res) => {
+  Person.find({})
+    .then((persons) => {
+      res.send(
+        `Phonebook has info for ${persons.length} people on the date: ${Date()}`
+      );
+    })
+    // eslint-disable-next-line no-undef
+    .catch((error) => next(error));
+});
 
-  persons.forEach((person) => {
-    if (person.name === body.name) {
-      return res.status(400).json({
-        error: "Name must be unique",
-      });
-    }
+//get all
+app.get("/api/persons", (req, res) => {
+  Person.find({}).then((persons) => {
+    res.json(persons.map(person => person.toJSON()));
   });
-  const person = {
-    name: body.name,
-    number: body.number,
-    id: randomID(),
-  };
-  persons = persons.concat(person);
-  res.json(person);
 });
 
-app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
+//get one person
+app.get("/api/persons/:id", (req, res, next) => {
+  Person.findById(req.params.id)
+    .then((person) => {
+      res.json(person.toJSON());
+    })
+    .catch((error) => next(error));
+});
 
-  const person = persons.find((person) => person.id === id);
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(204).end();
+//post a new person
+app.post("/api/persons", (req, res, next) => {
+  const requestBody = req.body;
+  const name = requestBody.name;
+  const number = requestBody.number;
+  if ((name || number) === undefined) {
+    return res.status(400).json({ error: "name or number missing" });
   }
+  const person = new Person({
+    name: name,
+    number: number,
+  });
+  person
+    .save()
+    .then((saved) => {
+      res.json(saved.toJSON());
+    })
+    .catch((error) => next(error));
 });
 
-app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  persons = persons.filter((person) => person.id !== id);
-  res.status(204).end();
+//support update
+app.put("/api/notes/:id", (req, res, next) => {
+  const person = {
+    name: req.body.name,
+    number: req.body.number,
+  };
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true },{ runValidators: true, context: "query" })
+    .then((updated) => {
+      res.json(updated.toJSON());
+    })
+    .catch((error) => next(error));
 });
 
-const PORT = process.env.PORT || 3001;
+//delete person
+app.delete("/api/persons/:id", (req, res, next) => {
+  Person.findByIdAndRemove(req.params.id)
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch((error) => next(error));
+});
+
+app.use(errorHandler);
+//listen for changes
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

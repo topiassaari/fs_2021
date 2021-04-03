@@ -25,8 +25,16 @@ describe("The API returns", () => {
     const response = await api.get("/api/blogs");
     expect(response.body).toHaveLength(helper.blogs.length);
   });
-
-  afterAll(() => {
-    mongoose.connection.close();
+});
+describe("The blogs have", () => {
+  test(" id instead of _id", async () => {
+    const response = await api.get("/api/blogs");
+    response.body.forEach((blog) => {
+      expect(blog.id).toBeDefined();
+      expect(blog._id).toBeUndefined();
+    });
   });
+});
+afterAll(() => {
+  mongoose.connection.close();
 });

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+var _ = require("lodash");
 const supertest = require("supertest");
 const app = require("../app");
 const Blog = require("../models/blog");
@@ -35,6 +36,24 @@ describe("The blogs have", () => {
     });
   });
 });
+
+describe("A new blog post ", () => {
+  test(" is added correctly", async () => {
+    const newBlog = new Blog({
+      title: "Taikaa muumimaailmassa",
+      author: "Hän Itse",
+      url: "www.jee.com",
+      likes: 2,
+    });
+    let blogObject = new Blog(newBlog);
+    await blogObject.save();
+    const response = await api.get("/api/blogs");
+    const ids = _.map(response.body, "id");
+    expect(response.body).toHaveLength(helper.blogs.length + 1);
+    expect(ids).toContain(newBlog.id);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });

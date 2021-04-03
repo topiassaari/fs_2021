@@ -20,10 +20,10 @@ const favoriteBlog = (blogs) => {
   return mostLikes === 0
     ? "no favorites found"
     : {
-        title: mostLiked.title,
-        author: mostLiked.author,
-        likes: mostLiked.likes,
-      };
+      title: mostLiked.title,
+      author: mostLiked.author,
+      likes: mostLiked.likes,
+    };
 };
 const mostBlogs = (blogs) => {
   var names = _.map(blogs, "author");

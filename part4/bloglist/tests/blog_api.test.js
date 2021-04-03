@@ -52,8 +52,27 @@ describe("A new blog post ", () => {
     expect(response.body).toHaveLength(helper.blogs.length + 1);
     expect(ids).toContain(newBlog.id);
   });
+  test(" undefined likes defaults to zero", async () => {
+    const newBlog = new Blog({
+      title: "Taikaa muumimaailmassa",
+      author: "Hän Itse",
+      url: "www.jee.com",
+    });
+    let blogObject = new Blog(newBlog);
+    await blogObject.save();
+    const response = await api.get("/api/blogs");
+    const addedBlog = response.body.find((a) => a.id === newBlog.id);
+    expect(addedBlog.likes).toBe(0);
+  });
 });
-
+test(" undefined author and url causes error", async () => {
+  const newBlog = new Blog({
+    title: "Taikaa muumimaailmassa",
+  });
+  let blogObject = new Blog(newBlog);
+  const response = await api.post("/api/blogs", blogObject);
+  expect(response.status).toBe(400);
+});
 afterAll(() => {
   mongoose.connection.close();
 });

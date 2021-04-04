@@ -22,3 +22,17 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:3003/api/blogs/6068a769d1765b24ad89af10
+
+###
+GET http://localhost:3003/api/users
+
+###
+POST http://localhost:3003/api/users/
+Content-Type: application/json
+
+{
+    "blogs": [],
+    "username": "diiba",
+    "name": "Daaba",
+    "password": "passwurd"
+}

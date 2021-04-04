@@ -2,7 +2,7 @@ POST http://localhost:3003/api/blogs/
 Content-Type: application/json
 
 {
-      "title": "Taikaa muumimaailmassa",
+  "title": "Taikaa muumimaailmassa",
   "author": "Hän Itse",
   "url": "www.jee.com",
   "likes": 2
@@ -10,3 +10,15 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3003/api/blogs
+
+###
+GET http://localhost:3003/api/blogs/60698106f05bc60b33dfccd4
+
+###
+PUT http://localhost:3003/api/blogs/60698106f05bc60b33dfccd4
+Content-Type: application/json
+
+{"likes": 13}
+
+###
+DELETE http://localhost:3003/api/blogs/6068a769d1765b24ad89af10

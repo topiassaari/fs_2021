@@ -12,8 +12,22 @@ blogRouter.post("/", (req, res) => {
     res.status(400).json({ error: "author and url missing" });
   }
   blog.save().then((result) => {
-    res.status(201).json(result);
+    res.status(201).json(result.toJSON());
   });
+});
+
+blogRouter.get("/:id", async (req, res) => {
+  const blog = await Blog.findById(req.params.id);
+  if (blog) {
+    res.json(blog.toJSON());
+  } else {
+    res.status(404).end();
+  }
+});
+
+blogRouter.delete("/:id", async (req, res) => {
+  await Blog.findByIdAndRemove(req.params.id);
+  res.status(204).end();
 });
 
 module.exports = blogRouter;

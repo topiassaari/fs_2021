@@ -5,6 +5,8 @@ const app = require("../app");
 const Blog = require("../models/blog");
 const helper = require("../utils/test_helper");
 const api = supertest(app);
+const bcrypt = require("bcrypt");
+const User = require("../models/user");
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -70,9 +72,72 @@ test(" undefined author and url causes error", async () => {
     title: "Taikaa muumimaailmassa",
   });
   let blogObject = new Blog(newBlog);
-  const response = await api.post("/api/blogs", blogObject);
-  expect(response.status).toBe(400);
+  await api.post("/api/blogs", blogObject).expect(401);
 });
+
+describe("when there is initially one user in db", () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash("salajuttui", 10);
+    const user = new User({ username: "kayttaja", passwordHash });
+
+    await user.save();
+  });
+
+  test(" creation succeeds with a fresh username", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "usero",
+      name: "Fist Last",
+      password: "supasegret",
+    };
+
+    await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
+
+    const usernames = usersAtEnd.map((u) => u.username);
+    expect(usernames).toContain(newUser.username);
+  });
+  test(" too short username causes error", async () => {
+    const shortUser = {
+      username: "us",
+      name: "Fist Last",
+      password: "supasegret",
+    };
+    await api.post("/api/users").send(shortUser).expect(400);
+  });
+  test(" too short password causes error", async () => {
+    const shortPassword = {
+      username: "usero",
+      name: "Fist Last",
+      password: "su",
+    };
+    await api.post("/api/users").send(shortPassword).expect(400);
+  });
+  test(" undefined user causes error", async () => {
+    const noUsername = {
+      name: "Fist Last",
+      password: "su",
+    };
+    await api.post("/api/users").send(noUsername).expect(400);
+  });
+  test(" undefined pw causes error", async () => {
+    const noPassword = {
+      username: "usero",
+      name: "Fist Last",
+    };
+    await api.post("/api/users").send(noPassword).expect(400);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });

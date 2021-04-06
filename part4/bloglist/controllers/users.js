@@ -3,17 +3,36 @@ const userRouter = require("express").Router();
 const User = require("../models/user");
 
 userRouter.post("/", async (req, res) => {
-  const body = req.body;
   const saltRounds = 10;
-  const passwordHash = await bcrypt.hash(body.password, saltRounds);
+  const username = req.body.username;
+  const password = req.body.password;
 
-  const user = new User({
-    username: body.username,
-    name: body.name,
-    passwordHash,
-  });
-  const savedUser = await user.save();
-  res.json(savedUser);
+  if (!password || !username) {
+    res
+      .status(400)
+      .json({
+        error: "username or pasword missing",
+      })
+      .end();
+  } else {
+    if (password.length < 3 || username.length < 3) {
+      res
+        .status(400)
+        .json({
+          error: "username or pasword too short",
+        })
+        .end();
+    } else {
+      const passwordHash = await bcrypt.hash(req.body.password, saltRounds);
+      const user = new User({
+        username: username,
+        name: req.body.name,
+        passwordHash,
+      });
+      const savedUser = await user.save();
+      res.json(savedUser);
+    }
+  }
 });
 userRouter.get("/", async (req, res) => {
   const users = await User.find({}).populate("blogs", { author: 1, likes: 1 });

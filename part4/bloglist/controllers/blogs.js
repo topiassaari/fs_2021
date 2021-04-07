@@ -8,6 +8,9 @@ blogRouter.get("/", async (req, res) => {
 });
 
 blogRouter.post("/", middleware.userExtractor, async (req, res) => {
+  if (req.token === undefined) {
+    res.status(401).json({ error: "Provide correct token" });
+  }
   const blog = new Blog({
     title: req.body.title,
     author: req.body.author,
@@ -18,11 +21,12 @@ blogRouter.post("/", middleware.userExtractor, async (req, res) => {
 
   if ((blog.author && blog.url) === undefined) {
     res.status(400).json({ error: "author and url missing" });
+  } else {
+    const result = await blog.save();
+    req.user.blogs = req.user.blogs.concat(result._id);
+    await req.user.save();
+    res.status(201).json(result.toJSON());
   }
-  const result = await blog.save();
-  req.user.blogs = req.user.blogs.concat(result._id);
-  await req.user.save();
-  res.status(201).json(result.toJSON());
 });
 
 blogRouter.get("/:id", async (req, res) => {

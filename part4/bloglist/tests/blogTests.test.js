@@ -1,5 +1,5 @@
 const listHelper = require("../utils/list_helper");
-const helper = require("../utils/test_helper");
+const helper = require("./test_helper");
 
 describe("dummy", () => {
   test(" returns one", () => {

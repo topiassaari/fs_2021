@@ -29,6 +29,7 @@ const Togglable = React.forwardRef((props, ref) => {
 });
 Togglable.propTypes = {
   label: PropTypes.string.isRequired,
+  blog: PropTypes.object,
 };
 Togglable.displayName = "Togglable";
 

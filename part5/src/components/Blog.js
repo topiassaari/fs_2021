@@ -35,10 +35,10 @@ const Blog = (props) => {
       <button onClick={toggleEverything}>
         {showEverything === true ? "hide" : "view"}
       </button>
-      <div style={hide}>
+      <div style={hide} className="smallContent">
         {props.blog.title} {props.blog.author}
       </div>
-      <div style={show}>
+      <div style={show} className="fullContent">
         <table>
           <tbody>
             <tr>
@@ -88,10 +88,10 @@ const Blog = (props) => {
   );
 };
 Blog.propTypes = {
-  username: PropTypes.func.isRequired,
-  handleLike: PropTypes.func.isRequired,
-  blog: PropTypes.string.isRequired,
-  handleDelete: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
+  handleLike: PropTypes.func,
+  blog: PropTypes.object.isRequired,
+  handleDelete: PropTypes.func,
 };
 Blog.displayName = "Togglable";
 export default Blog;

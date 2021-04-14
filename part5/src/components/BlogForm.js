@@ -40,10 +40,10 @@ const BlogForm = (props) => {
 };
 
 BlogForm.propTypes = {
-  submit: PropTypes.string.isRequired,
-  handleUrl: PropTypes.string.isRequired,
-  handleTitle: PropTypes.string.isRequired,
-  handleAuthor: PropTypes.string.isRequired,
+  submit: PropTypes.func.isRequired,
+  handleUrl: PropTypes.func.isRequired,
+  handleTitle: PropTypes.func.isRequired,
+  handleAuthor: PropTypes.func.isRequired,
   author: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,

@@ -88,7 +88,7 @@ const Blog = (props) => {
   );
 };
 Blog.propTypes = {
-  username: PropTypes.string.isRequired,
+  username: PropTypes.string,
   handleLike: PropTypes.func,
   blog: PropTypes.object.isRequired,
   handleDelete: PropTypes.func,

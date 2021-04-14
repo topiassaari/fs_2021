@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 
-const Blog = React.forwardRef((props, ref) => {
+const Blog = (props) => {
   const [showEverything, setEverythingVisible] = useState(false);
   const [showDelete, setDeleteShow] = useState(false);
 
@@ -85,6 +86,12 @@ const Blog = React.forwardRef((props, ref) => {
       </div>
     </div>
   );
-});
-
+};
+Blog.propTypes = {
+  username: PropTypes.func.isRequired,
+  handleLike: PropTypes.func.isRequired,
+  blog: PropTypes.string.isRequired,
+  handleDelete: PropTypes.string.isRequired,
+};
+Blog.displayName = "Togglable";
 export default Blog;

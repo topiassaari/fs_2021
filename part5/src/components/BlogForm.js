@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const BlogForm = (props) => {
   return (
@@ -36,6 +37,16 @@ const BlogForm = (props) => {
       </form>
     </div>
   );
+};
+
+BlogForm.propTypes = {
+  submit: PropTypes.string.isRequired,
+  handleUrl: PropTypes.string.isRequired,
+  handleTitle: PropTypes.string.isRequired,
+  handleAuthor: PropTypes.string.isRequired,
+  author: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
 };
 
 export default BlogForm;

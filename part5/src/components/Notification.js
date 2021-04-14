@@ -1,3 +1,4 @@
+import React from "react";
 const Notification = (props) => {
   if (props.success) {
     return <div className={"success"}>{props.success}</div>;

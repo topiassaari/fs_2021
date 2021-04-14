@@ -135,12 +135,12 @@ const App = () => {
     var result = window.confirm(`delete ${blog.author}?`);
     if (result === true) {
       try {
-        blogService.deleteBlog(blog.id).then((returned) => {
+        blogService.deleteBlog(blog.id).then(() => {
           blogService
             .getAll()
             .then((blogs) => setBlogs(blogs))
             .then(() => {
-              setSuccess(`blog deleted`);
+              setSuccess("blog deleted");
               setTimeout(() => {
                 setSuccess(null);
               }, 5000);

@@ -45,19 +45,19 @@ const Blog = (props) => {
               <td>
                 <b>Title:</b>
               </td>
-              <td>{props.blog.title}</td>
+              <td id="title">{props.blog.title}</td>
             </tr>
             <tr>
               <td>
                 <b>Author:</b>
               </td>
-              <td>{props.blog.author}</td>
+              <td id="author">{props.blog.author}</td>
             </tr>
             <tr>
               <td>
                 <b>URL:</b>
               </td>
-              <td>{props.blog.url}</td>
+              <td id="url">{props.blog.url}</td>
             </tr>
             <tr>
               <td>

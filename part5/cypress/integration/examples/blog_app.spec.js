@@ -49,13 +49,13 @@ describe("blog app", function () {
       cy.contains("new blog duuu by juuu added");
       cy.get("#listOfBlogs").contains("duuu juuu");
     });
-    describe("and a blog exists", function () {
-      describe("and several blogs exist", function () {
+    describe("and when a blog exists", function () {
+      describe("and when several blogs exist", function () {
         beforeEach(function () {
           cy.createBlog({ url: "duu", title: "daa", author: "buu" });
           cy.createBlog({
             url: "asasa",
-            title: "daasdasda",
+            title: "dusdasda",
             author: "buadasdu",
           });
           cy.createBlog({
@@ -65,10 +65,38 @@ describe("blog app", function () {
           });
         });
 
-        it("and be liked", function () {
+        it("they can be liked", function () {
           cy.contains("daa").parent().contains("view").click();
           cy.contains("daa").parent().contains("like").click();
           cy.contains("Like added to buu");
+        });
+
+        it("or be deleted by the creator", function () {
+          cy.contains("daa").parent().contains("view").click();
+          cy.contains("daa").parent().contains("delete").click();
+          cy.contains("blog deleted");
+          cy.get("#listOfBlogs").should("not.contain", "duuu juuu");
+        });
+
+        it("and they are in order based on likes", function () {
+          //makes sure the first created element is first in list
+          cy.get("#listOfBlogs").children().first().contains("daa");
+
+          //like an item five times
+          cy.contains("dusdasda").parent().contains("view").click();
+          for (let i = 0; i < 5; i++) {
+            cy.contains("dusdasda").parent().contains("like").click();
+          }
+          //then like another blog three times
+          cy.contains("daa").parent().contains("view").click();
+          for (let i = 0; i < 3; i++) {
+            cy.contains("daa").parent().contains("like").click();
+          }
+
+          //finally make sure items are in list based on likes
+          cy.get("#listOfBlogs").children().eq(0).contains("dusdasda");
+          cy.get("#listOfBlogs").children().eq(1).contains("daa");
+          cy.get("#listOfBlogs").children().eq(2).contains("daasdadsdasda");
         });
       });
     });

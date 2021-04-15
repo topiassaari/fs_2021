@@ -35,50 +35,58 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
     console.log("logging in ", username);
-    try {
-      const user = await loginService.login({
+    loginService
+      .login({
         username,
         password,
+      })
+      .then(() => {
+        window.localStorage.setItem("loggedUser", JSON.stringify(user));
+        blogService.setToken(user.token);
+        setUser(user);
+        setUsername("");
+        setPassword("");
+        setSuccess(`welcome ${username}`);
+        setTimeout(() => {
+          setSuccess(null);
+        }, 5000);
+      })
+      .catch((err) => {
+        setError("wrong username or password");
+        console.log(err);
+        setTimeout(() => {
+          setError(null);
+        }, 5000);
       });
-      window.localStorage.setItem("loggedUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
-      setUsername("");
-      setPassword("");
-      setSuccess(`welcome ${username}`);
-      setTimeout(() => {
-        setSuccess(null);
-      }, 5000);
-    } catch (exception) {
-      setError("wrong username or password");
-      setTimeout(() => {
-        setError(null);
-      }, 5000);
-    }
   };
   const handleLogout = async (event) => {
     event.preventDefault();
     console.log("logging out");
-    try {
-      window.localStorage.removeItem("loggedUser");
-      blogService.setToken(null);
-      setUser(null);
-      setUsername("");
-      setPassword("");
-      setSuccess("logged out");
-      setTimeout(() => {
-        setSuccess(null);
-      }, 5000);
-    } catch (exception) {
-      setError("logout failed");
-      setTimeout(() => {
-        setError(null);
-      }, 5000);
-    }
+
+    window.localStorage
+      .removeItem("loggedUser")
+      .then(() => {
+        blogService.setToken(null);
+        setUser(null);
+        setUsername("");
+        setPassword("");
+        setSuccess("logged out");
+        setTimeout(() => {
+          setSuccess(null);
+        }, 5000);
+      })
+      .catch((err) => {
+        setError("logout failed");
+        console.log(err);
+        setTimeout(() => {
+          setError(null);
+        }, 5000);
+      });
   };
   const createBlog = (blogObject) => {
-    try {
-      blogService.create(blogObject).then((returned) => {
+    blogService
+      .create(blogObject)
+      .then((returned) => {
         setBlogs(blogs.concat(returned));
         setSuccess(
           `new blog ${blogObject.title} by ${blogObject.author} added`
@@ -87,43 +95,44 @@ const App = () => {
         setTimeout(() => {
           setSuccess(null);
         }, 5000);
+      })
+      .catch((err) => {
+        setError("adding blog failed");
+        console.log(err);
+        setTimeout(() => {
+          setError(null);
+        }, 5000);
       });
-    } catch (exception) {
-      setError("adding blog failed");
-      setTimeout(() => {
-        setError(null);
-      }, 5000);
-    }
   };
   const updateLikes = (blog) => {
-    try {
-      blogService
-        .update(blog.id, {
-          likes: blog.likes + 1,
-        })
-        .then((returned) => {
-          blogService
-            .getAll()
-            .then((blogs) => setBlogs(blogs))
-            .then(() => {
-              setSuccess(`Like added to ${returned.author}`);
-              setTimeout(() => {
-                setSuccess(null);
-              }, 5000);
-            });
-        });
-    } catch (exception) {
-      setError("liking failed");
-      setTimeout(() => {
-        setError(null);
-      }, 5000);
-    }
+    blogService
+      .update(blog.id, {
+        likes: blog.likes + 1,
+      })
+      .then((returned) => {
+        blogService
+          .getAll()
+          .then((blogs) => setBlogs(blogs))
+          .then(() => {
+            setSuccess(`Like added to ${returned.author}`);
+            setTimeout(() => {
+              setSuccess(null);
+            }, 5000);
+          });
+      })
+      .catch(() => {
+        setError("liking failed");
+        setTimeout(() => {
+          setError(null);
+        }, 5000);
+      });
   };
   const handleDelete = (blog) => {
     var result = window.confirm(`delete ${blog.author}?`);
     if (result === true) {
-      try {
-        blogService.deleteBlog(blog.id).then(() => {
+      blogService
+        .deleteBlog(blog.id)
+        .then(() => {
           blogService
             .getAll()
             .then((blogs) => setBlogs(blogs))
@@ -133,13 +142,14 @@ const App = () => {
                 setSuccess(null);
               }, 5000);
             });
+        })
+        .catch((err) => {
+          setError("failed to delete");
+          console.log(err);
+          setTimeout(() => {
+            setError(null);
+          }, 5000);
         });
-      } catch (exception) {
-        setError("failed to delete");
-        setTimeout(() => {
-          setError(null);
-        }, 5000);
-      }
     }
   };
   const loginForm = () => (

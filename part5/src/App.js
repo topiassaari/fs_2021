@@ -162,6 +162,7 @@ const App = () => {
   return (
     <div>
       <Notification success={success} error={error} />
+      <h1>Bloglist</h1>
       {user === null ? (
         loginForm()
       ) : (

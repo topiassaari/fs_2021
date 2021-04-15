@@ -9,10 +9,7 @@ const BlogForm = ({ createBlog }) => {
   });
   const handleInputChange = (event) => {
     event.persist();
-    setNewBlog((inputs) => ({
-      ...inputs,
-      [event.target.name]: event.target.value,
-    }));
+    setNewBlog({ ...newBlog, [event.target.name]: event.target.value });
   };
   const addBlog = (event) => {
     event.preventDefault();
@@ -30,7 +27,7 @@ const BlogForm = ({ createBlog }) => {
   return (
     <div>
       <h2>add blog</h2>
-      <form id="form" onSubmit={addBlog}>
+      <form onSubmit={addBlog}>
         <div>
           title:
           <input

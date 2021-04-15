@@ -32,7 +32,7 @@ const App = () => {
     }
   }, []);
 
-  const handleLogin = async (event) => {
+  const handleLogin = (event) => {
     event.preventDefault();
     console.log("logging in ", username);
     loginService
@@ -59,7 +59,7 @@ const App = () => {
         }, 5000);
       });
   };
-  const handleLogout = async (event) => {
+  const handleLogout = (event) => {
     event.preventDefault();
     console.log("logging out");
 

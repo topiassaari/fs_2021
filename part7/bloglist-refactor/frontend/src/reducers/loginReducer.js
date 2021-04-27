@@ -2,7 +2,7 @@
 import loginService from "../services/login";
 import blogService from "../services/blogs";
 
-const userReducer = (state = [], action) => {
+const loginReducer = (state = [], action) => {
   switch (action.type) {
     case "LOGIN":
       return action.data;
@@ -17,12 +17,12 @@ const userReducer = (state = [], action) => {
 export const userValidation = () => {
   return async (dispatch) => {
     const loggedUserJSON = window.localStorage.getItem("loggedUser");
-    const user = JSON.parse(loggedUserJSON);
+    const login = JSON.parse(loggedUserJSON);
     if (loggedUserJSON) {
-      await blogService.setToken(user.token);
+      await blogService.setToken(login.token);
       dispatch({
         type: "VALIDATE",
-        data: user,
+        data: login,
       });
     }
   };
@@ -53,4 +53,4 @@ export const logout = () => {
   };
 };
 
-export default userReducer;
+export default loginReducer;

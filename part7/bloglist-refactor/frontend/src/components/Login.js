@@ -1,5 +1,5 @@
 import React from "react";
-import { userLogin } from "../reducers/userReducer";
+import { userLogin } from "../reducers/loginReducer";
 import { setNotification } from "../reducers/notificationReducer";
 import { useDispatch } from "react-redux";
 

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Switch, Route } from "react-router-dom";
 
 import Blogs from "./components/Blogs";
 import LoginForm from "./components/Login";
@@ -6,17 +7,22 @@ import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 
+import User from "./components/User";
+import UserList from "./components/UserList";
+
 import { useDispatch, useSelector } from "react-redux";
 import { getAll } from "./reducers/blogReducer";
-import { userValidation, logout } from "./reducers/userReducer";
+import { userValidation, logout } from "./reducers/loginReducer";
 import { setNotification } from "./reducers/notificationReducer";
+import { getAllUsers } from "./reducers/usersReducer";
 
 const App = () => {
   //const blogFormRef = useRef();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+  const login = useSelector((state) => state.login);
   useEffect(() => {
     dispatch(getAll());
+    dispatch(getAllUsers());
   }, [dispatch]);
   useEffect(() => {
     dispatch(userValidation());
@@ -49,19 +55,29 @@ const App = () => {
     <div>
       <Notification />
       <h1>Bloglist</h1>
-      {!user.token ? (
+      {!login.token ? (
         loginForm()
       ) : (
         <div>
-          <h2>blogs</h2>
           <div style={{ marginBottom: "20px" }}>
-            {user.username} logged in
+            {login.username} logged in
             <button onClick={handleLogout}>logout</button>
           </div>
-          {blogForm()}
-          <div id="listOfBlogs">
-            <Blogs />
-          </div>
+          <Switch>
+            <Route path="/blogs">
+              <h2>blogs</h2>
+              {blogForm()}
+              <div id="listOfBlogs">
+                <Blogs />
+              </div>
+            </Route>
+            <Route path="/users">
+              <UserList />
+            </Route>
+            <Route path="/user/:id">
+              <User />
+            </Route>
+          </Switch>
         </div>
       )}
     </div>

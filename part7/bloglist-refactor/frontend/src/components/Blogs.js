@@ -7,14 +7,14 @@ import { setNotification } from "../reducers/notificationReducer";
 const Blog = (props) => {
   const [showEverything, setEverythingVisible] = useState(false);
   const [showDelete, setDeleteShow] = useState(false);
-  const user = useSelector((state) => state.user);
+  const login = useSelector((state) => state.login);
 
   const toggleEverything = () => {
     setEverythingVisible(!showEverything);
   };
 
   const showingDelete = () => {
-    if (user.username === props.blog.user.username) {
+    if (login.username === props.blog.user.username) {
       setDeleteShow(true);
     } else setDeleteShow(false);
   };

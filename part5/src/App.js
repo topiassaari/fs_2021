@@ -26,9 +26,9 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedUser");
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+      const usero = JSON.parse(loggedUserJSON);
+      setUser(usero);
+      blogService.setToken(usero.token);
     }
   }, []);
 
@@ -40,10 +40,10 @@ const App = () => {
         username,
         password,
       })
-      .then(() => {
-        window.localStorage.setItem("loggedUser", JSON.stringify(user));
-        blogService.setToken(user.token);
-        setUser(user);
+      .then((res) => {
+        window.localStorage.setItem("loggedUser", JSON.stringify(res));
+        blogService.setToken(res.token);
+        setUser(res);
         setUsername("");
         setPassword("");
         setSuccess(`welcome ${username}`);
@@ -84,6 +84,7 @@ const App = () => {
       });
   };
   const createBlog = (blogObject) => {
+    console.log(blogObject);
     blogService
       .create(blogObject)
       .then((returned) => {

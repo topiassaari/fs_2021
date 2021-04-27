@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteBlog, like, getAll } from "../reducers/blogReducer";
+import { setNotification } from "../reducers/notificationReducer";
 
 const Blog = (props) => {
   const [showEverything, setEverythingVisible] = useState(false);
   const [showDelete, setDeleteShow] = useState(false);
+  const user = useSelector((state) => state.user);
 
   const toggleEverything = () => {
     setEverythingVisible(!showEverything);
   };
 
   const showingDelete = () => {
-    if (props.username === props.blog.user.username) {
+    if (user.username === props.blog.user.username) {
       setDeleteShow(true);
     } else setDeleteShow(false);
   };
@@ -94,4 +98,45 @@ Blog.propTypes = {
   handleDelete: PropTypes.func,
 };
 Blog.displayName = "Togglable";
-export default Blog;
+
+const Blogs = () => {
+  const dispatch = useDispatch();
+  const updateLikes = (blog) => {
+    dispatch(like(blog))
+      .then(() => {
+        dispatch(setNotification(`Like added to ${blog.author}`, "success", 5));
+        dispatch(getAll());
+      })
+      .catch((err) => {
+        dispatch(setNotification("liking failed", "error", 5));
+        console.log(err);
+      });
+  };
+  const handleDelete = (blog) => {
+    var result = window.confirm(`delete ${blog.author}?`);
+    if (result === true) {
+      dispatch(deleteBlog(blog))
+        .then(() => {
+          dispatch(setNotification("blog deleted", "success", 5));
+          dispatch(getAll());
+        })
+        .catch(() => {
+          dispatch(setNotification("failed to deleter", "success", 5));
+        });
+    }
+  };
+
+  const blogs = useSelector((state) => state.blogs);
+  return blogs
+    .sort((a, b) => b.likes - a.likes)
+    .map((blog) => (
+      <Blog
+        key={blog.id}
+        blog={blog}
+        handleLike={() => updateLikes(blog)}
+        handleDelete={() => handleDelete(blog)}
+      />
+    ));
+};
+
+export default Blogs;

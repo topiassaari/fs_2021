@@ -1,23 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useRouteMatch } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteBlog, like, getAll } from "../reducers/blogReducer";
+import { deleteBlog, like, getAll, addComment } from "../reducers/blogReducer";
 import { setNotification } from "../reducers/notificationReducer";
 
 const Blog = () => {
+  const dispatch = useDispatch();
   const login = useSelector((state) => state.login);
   const blogs = useSelector((state) => state.blogs);
-  useEffect(() => {
-    if (login.username === blog.user.username) {
-      setDeleteShow(true);
-    } else setDeleteShow(false);
-  });
 
   const match = useRouteMatch("/blog/:id");
   const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null;
-  const [showDelete, setDeleteShow] = useState(false);
 
-  const dispatch = useDispatch();
   const updateLikes = (blog) => {
     dispatch(like(blog))
       .then(() => {
@@ -42,29 +36,61 @@ const Blog = () => {
         });
     }
   };
+  const submitComment = (event) => {
+    event.preventDefault();
+    const comment = event.target.comment.value;
+    console.log(event.target.comment.value);
+    dispatch(addComment(blog, comment))
+      .then(() => {
+        dispatch(setNotification("comment added", "success", 5));
+        event.target.reset();
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(setNotification("adding comment failed", "error", 5));
+      });
+  };
   if (!blog) {
     return null;
   }
+
   return (
-    <div>
-      <h1>
-        {blog.title} by {blog.author}
-      </h1>
-      <li>
-        <a href={blog.url}>{blog.url}</a>
-      </li>
-      <li>
-        Likes: {blog.likes}
-        <button onClick={() => updateLikes(blog)}>like </button>
-      </li>
-      <li>Added by: {blog.user.username}</li>
-      <button
-        style={{ display: showDelete ? "" : "none" }}
-        onClick={() => handleDelete(blog)}
-      >
-        delete
-      </button>
-    </div>
+    <>
+      <div>
+        <h1>
+          {blog.title} by {blog.author}
+        </h1>
+        <li>
+          <a href={blog.url}>{blog.url}</a>
+        </li>
+        <li>
+          Likes: {blog.likes}
+          <button onClick={() => updateLikes(blog)}>like </button>
+        </li>
+        <li>Added by: {blog.user.username}</li>
+
+        <button
+          style={{
+            display: login.username === blog.user.username ? "block" : "none",
+          }}
+          onClick={() => handleDelete(blog)}
+        >
+          delete
+        </button>
+      </div>
+      <div>
+        <h2>Comments</h2>
+        <form onSubmit={submitComment}>
+          <input name="comment" type="text" />
+          <button type="submit">comment</button>
+        </form>
+        <ul>
+          {blog.comments.map((comment) => {
+            return <li key={comment}>{comment}</li>;
+          })}
+        </ul>
+      </div>
+    </>
   );
 };
 

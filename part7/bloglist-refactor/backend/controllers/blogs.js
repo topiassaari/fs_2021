@@ -38,6 +38,17 @@ blogRouter.get("/:id", async (req, res) => {
   }
 });
 
+blogRouter.post("/:id/comments", async (req, res) => {
+  const blog = await Blog.findById(req.params.id);
+  const newComments = blog.comments.concat(req.body.content);
+  const toUpdate = { comments: newComments };
+  const updated = await Blog.findByIdAndUpdate(req.params.id, toUpdate, {
+    new: true,
+  });
+  const result = await updated.save();
+  res.status(201).json(result.toJSON());
+});
+
 blogRouter.delete("/:id", middleware.userExtractor, async (req, res) => {
   const blog = await Blog.findById(req.params.id);
   if (blog.user.toString() === req.user.id.toString()) {

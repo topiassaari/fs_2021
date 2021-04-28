@@ -58,6 +58,19 @@ describe("when blogs the api returns", () => {
       })
       .expect(401);
   });
+  test("comments", async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    const blog = blogsAtStart[0];
+    const firstBlog = await api.get(`/api/blogs/${blog.id}`);
+    expect(firstBlog.body.comments[0]).toBe("jee");
+  });
+  test("adding comment", async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    const blog = blogsAtStart[0];
+    await api.post(`/api/blogs/${blog.id}/comments`).send({ content: "juu" });
+    const firstBlog = await api.get(`/api/blogs/${blog.id}`);
+    expect(firstBlog.body.comments[2]).toBe("juu");
+  });
 });
 
 describe("after logging in ", () => {

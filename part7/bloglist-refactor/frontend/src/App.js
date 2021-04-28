@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 
+import Blog from "./components/Blog";
 import Blogs from "./components/Blogs";
 import LoginForm from "./components/Login";
 import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
-
+import Menu from "./components/Menu";
 import User from "./components/User";
 import UserList from "./components/UserList";
 
@@ -58,27 +59,33 @@ const App = () => {
       {!login.token ? (
         loginForm()
       ) : (
-        <div>
-          <div style={{ marginBottom: "20px" }}>
-            {login.username} logged in
-            <button onClick={handleLogout}>logout</button>
+        <>
+          <Menu />
+          <div>
+            <div style={{ marginBottom: "20px" }}>
+              {login.username} logged in
+              <button onClick={handleLogout}>logout</button>
+            </div>
+            <Switch>
+              <Route path="/blogs">
+                <h2>blogs</h2>
+                {blogForm()}
+                <div id="listOfBlogs">
+                  <Blogs />
+                </div>
+              </Route>
+              <Route path="/blog/:id">
+                <Blog />
+              </Route>
+              <Route path="/users">
+                <UserList />
+              </Route>
+              <Route path="/user/:id">
+                <User />
+              </Route>
+            </Switch>
           </div>
-          <Switch>
-            <Route path="/blogs">
-              <h2>blogs</h2>
-              {blogForm()}
-              <div id="listOfBlogs">
-                <Blogs />
-              </div>
-            </Route>
-            <Route path="/users">
-              <UserList />
-            </Route>
-            <Route path="/user/:id">
-              <User />
-            </Route>
-          </Switch>
-        </div>
+        </>
       )}
     </div>
   );

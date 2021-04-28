@@ -2,6 +2,7 @@ import React from "react";
 import { userLogin } from "../reducers/loginReducer";
 import { setNotification } from "../reducers/notificationReducer";
 import { useDispatch } from "react-redux";
+import { TextField, Button } from "@material-ui/core";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -25,16 +26,19 @@ const LoginForm = () => {
       <h2>Login</h2>
       <form id="loginForm" onSubmit={handleLogin}>
         <div>
-          username
-          <input id="username" name="username" />
+          <TextField label="username" id="username" name="username" />
         </div>
         <div>
-          password
-          <input id="password" type="password" name="password" />
+          <TextField
+            label="password"
+            id="password"
+            type="password"
+            name="password"
+          />
         </div>
-        <button id="login" type="submit">
+        <Button variant="contained" color="primary" id="login" type="submit">
           login
-        </button>
+        </Button>
       </form>
     </div>
   );

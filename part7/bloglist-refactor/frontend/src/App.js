@@ -17,6 +17,8 @@ import { userValidation, logout } from "./reducers/loginReducer";
 import { setNotification } from "./reducers/notificationReducer";
 import { getAllUsers } from "./reducers/usersReducer";
 
+import { Container, Button, AppBar, Typography } from "@material-ui/core";
+
 const App = () => {
   //const blogFormRef = useRef();
   const dispatch = useDispatch();
@@ -53,41 +55,60 @@ const App = () => {
   );
 
   return (
-    <div>
-      <Notification />
-      <h1>Bloglist</h1>
-      {!login.token ? (
-        loginForm()
-      ) : (
-        <>
-          <Menu />
-          <div>
-            <div style={{ marginBottom: "20px" }}>
-              {login.username} logged in
-              <button onClick={handleLogout}>logout</button>
+    <Container>
+      <div>
+        {!login.token ? (
+          loginForm()
+        ) : (
+          <>
+            <AppBar
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Menu />
+
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Typography style={{ paddingRight: "8px" }}>
+                  {login.username} logged in
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleLogout}
+                >
+                  logout
+                </Button>
+              </div>
+            </AppBar>
+            <div style={{ marginTop: "100px" }}>
+              <Notification />
+              <Switch>
+                <Route path="/blogs">
+                  <Typography variant="h2">blogs</Typography>
+                  <div id="listOfBlogs">
+                    <Blogs />
+                  </div>
+                  {blogForm()}
+                </Route>
+                <Route path="/blog/:id">
+                  <Blog />
+                </Route>
+                <Route path="/users">
+                  <UserList />
+                </Route>
+                <Route path="/user/:id">
+                  <User />
+                </Route>
+              </Switch>
             </div>
-            <Switch>
-              <Route path="/blogs">
-                <h2>blogs</h2>
-                {blogForm()}
-                <div id="listOfBlogs">
-                  <Blogs />
-                </div>
-              </Route>
-              <Route path="/blog/:id">
-                <Blog />
-              </Route>
-              <Route path="/users">
-                <UserList />
-              </Route>
-              <Route path="/user/:id">
-                <User />
-              </Route>
-            </Switch>
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        )}
+      </div>
+    </Container>
   );
 };
 

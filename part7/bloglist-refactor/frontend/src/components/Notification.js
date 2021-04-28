@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
+import { Alert } from "@material-ui/lab";
 import React from "react";
 const Notification = () => {
   const notification = useSelector((state) => state.notifications);
   return notification === "" ? null : (
-    <div className={notification.type}>{notification.content}</div>
+    <Alert severity={notification.type}>{notification.content}</Alert>
   );
 };
 

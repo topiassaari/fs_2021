@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { setNotification } from "../reducers/notificationReducer";
 import { createBlog, getAll } from "../reducers/blogReducer";
+import { TextField, Button, Typography } from "@material-ui/core";
 
 const BlogForm = () => {
   const dispatch = useDispatch();
@@ -35,21 +36,20 @@ const BlogForm = () => {
 
   return (
     <div>
-      <h2>add blog</h2>
+      <Typography variant="h5">add blog</Typography>
       <form onSubmit={addBlog}>
         <div>
-          title:
-          <input id="title" type="text" name="title" />
+          <TextField label="title" id="title" type="text" name="title" />
         </div>
         <div>
-          author:
-          <input id="author" type="text" name="author" />
+          <TextField label="author" id="author" type="text" name="author" />
         </div>
         <div>
-          url:
-          <input id="url" type="text" name="url" />
+          <TextField label="url" id="url" type="text" name="url" />
         </div>
-        <button type="submit">save</button>
+        <Button variant="contained" color="primary" type="submit">
+          save
+        </Button>
       </form>
     </div>
   );

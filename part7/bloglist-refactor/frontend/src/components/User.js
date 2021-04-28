@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouteMatch } from "react-router-dom";
 import { useSelector } from "react-redux";
-
+import { Typography, List, ListItemText } from "@material-ui/core";
 const User = () => {
   const users = useSelector((state) => state.users);
   const blogs = useSelector((state) => state.blogs);
@@ -13,13 +13,13 @@ const User = () => {
   }
   return (
     <div>
-      <h2>{user.name}</h2>
-      <ul>
+      <Typography variant="h5">{user.name}</Typography>
+      <List>
         {user.blogs.map((blog) => {
           const b = blogs.find((b) => b.id === blog.id);
-          return <li key={blog.id}>{b.title}</li>;
+          return <ListItemText key={blog.id}>{b.title}</ListItemText>;
         })}
-      </ul>
+      </List>
     </div>
   );
 };

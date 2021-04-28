@@ -1,6 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { useSelector } from "react-redux";
+import {
+  TableContainer,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "@material-ui/core";
 
 const ListOfUsers = () => {
   const users = useSelector((state) => state.users);
@@ -8,32 +15,34 @@ const ListOfUsers = () => {
     return null;
   }
   return (
-    <div>
-      <table>
-        <tbody>
-          <tr>
-            <td>
+    <TableContainer>
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>
               <b>user</b>
-            </td>
-            <td>
+            </TableCell>
+            <TableCell>
               <b>blogs</b>
-            </td>
-          </tr>
+            </TableCell>
+          </TableRow>
           {users
             .sort((a, b) => b.blogs.length - a.blogs.length)
             .map((user) => {
               return (
-                <tr key={user.username}>
-                  <td>
-                    <Link to={`/user/${user.id}`}>{user.username}</Link>
-                  </td>
-                  <td>{user.blogs.length}</td>
-                </tr>
+                <TableRow key={user.username}>
+                  <TableCell>
+                    <RouterLink to={`/user/${user.id}`}>
+                      {user.username}
+                    </RouterLink>
+                  </TableCell>
+                  <TableCell>{user.blogs.length}</TableCell>
+                </TableRow>
               );
             })}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

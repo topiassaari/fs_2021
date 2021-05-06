@@ -57,7 +57,7 @@ const typeDefs = gql`
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
-    me: User
+    me: User!
   }
   type Mutation {
     addBook(
@@ -69,6 +69,7 @@ const typeDefs = gql`
     editAuthor(name: String!, setBornTo: Int): Author
     createUser(username: String!, favoriteGenre: String!): User
     login(username: String!, password: String!): Token
+    editUser(username: String!, genre: String!): User
   }
 `;
 const resolvers = {
@@ -96,7 +97,7 @@ const resolvers = {
         console.log(booksByAuthor);
         return booksByAuthor.filter((b) => b.genres.includes(args.genre));
       } else {
-        return await Book.find({});
+        return await Book.find({}).populate("author");
       }
     },
     me: (root, args, context) => {
@@ -159,14 +160,19 @@ const resolvers = {
         });
       }
     },
-    createUser: (root, args) => {
-      const user = new User({ username: args.username });
-
-      return user.save().catch((error) => {
+    createUser: async (root, args) => {
+      const user = new User({
+        username: args.username,
+        favoriteGenre: args.favoriteGenre,
+      });
+      try {
+        await user.save();
+        return user;
+      } catch {
         throw new UserInputError(error.message, {
           invalidArgs: args,
         });
-      });
+      }
     },
     login: async (root, args) => {
       const user = await User.findOne({ username: args.username });
@@ -181,6 +187,26 @@ const resolvers = {
       };
 
       return { value: jwt.sign(userForToken, JWT_SECRET) };
+    },
+    editUser: async (root, args, context) => {
+      const currentUser = context.currentUser;
+      if (!currentUser) {
+        throw new AuthenticationError("not logged in");
+      }
+      try {
+        let result = await User.findOneAndUpdate(
+          { name: args.name },
+          { favoriteGenre: args.genre },
+          {
+            new: true,
+          }
+        );
+        return result;
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        });
+      }
     },
   },
 };

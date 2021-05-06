@@ -10,6 +10,8 @@ const Author = require("./models/Author");
 const User = require("./models/User");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const { PubSub } = require("apollo-server");
+const pubsub = new PubSub();
 
 const JWT_SECRET = "jee";
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -71,6 +73,9 @@ const typeDefs = gql`
     login(username: String!, password: String!): Token
     editUser(username: String!, genre: String!): User
   }
+  type Subscription {
+    bookAdded: Book!
+  }
 `;
 const resolvers = {
   Query: {
@@ -85,7 +90,9 @@ const resolvers = {
         return result;
       }
       if (!args.author && args.genre) {
-        let result = await Book.find({ genres: { $in: args.genre } });
+        let result = await Book.find({ genres: { $in: args.genre } }).populate(
+          "author"
+        );
         return result;
       }
       //find by author and genre does not work, because not required
@@ -94,7 +101,6 @@ const resolvers = {
         const booksByAuthor = await Book.find({
           author: { name: { $in: author } },
         });
-        console.log(booksByAuthor);
         return booksByAuthor.filter((b) => b.genres.includes(args.genre));
       } else {
         return await Book.find({}).populate("author");
@@ -138,6 +144,7 @@ const resolvers = {
           invalidArgs: args,
         });
       }
+      pubsub.publish("BOOK_ADDED", { bookAdded: book });
       return book;
     },
     editAuthor: async (root, args, context) => {
@@ -209,6 +216,9 @@ const resolvers = {
       }
     },
   },
+  Subscription: {
+    bookAdded: { subscribe: () => pubsub.asyncIterator(["BOOK_ADDED"]) },
+  },
 };
 
 const server = new ApolloServer({
@@ -224,6 +234,7 @@ const server = new ApolloServer({
   },
 });
 
-server.listen().then(({ url }) => {
-  console.log(`Server ready at ${url}`);
+server.listen().then(({ url, subscriptionsUrl }) => {
+  console.log(`server: ${url}`);
+  console.log(`subs at: ${subscriptionsUrl}`);
 });

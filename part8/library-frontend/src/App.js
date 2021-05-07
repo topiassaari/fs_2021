@@ -5,8 +5,8 @@ import Login from "./components/Login";
 import Recommended from "./components/Recommended";
 
 import NewBook from "./components/NewBook";
-import { BOOKS, AUTHORS, ME } from "./queries";
-import { useQuery, useApolloClient } from "@apollo/client";
+import { BOOKS, AUTHORS, ME, BOOK_ADDED } from "./queries";
+import { useQuery, useApolloClient, useSubscription } from "@apollo/client";
 
 const Notify = ({ errorMessage }) => {
   if (!errorMessage) {
@@ -29,6 +29,14 @@ const App = () => {
       setToken(existingToken);
     }
   }, []);
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      window.alert(
+        `${subscriptionData.data.bookAdded.title} by ${subscriptionData.data.bookAdded.author.name} was added`
+      );
+    },
+  });
 
   const logout = () => {
     setToken(null);

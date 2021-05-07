@@ -82,3 +82,12 @@ export const BOOK_ADDED = gql`
   }
   ${BOOK}
 `;
+
+export const BOOKS_BY_GENRE = gql`
+  query allBooks($genre: String!) {
+    allBooks(genre: $genre) {
+      ...BookDetail
+    }
+  }
+  ${BOOK}
+`;

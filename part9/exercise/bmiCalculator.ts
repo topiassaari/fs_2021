@@ -1,6 +1,7 @@
+require("dotenv").config();
 export const calculateBmi = (height: number, weight: number) => {
   if (!isNaN(Number(height)) && !isNaN(Number(weight))) {
-    var bmi =
+    const bmi =
       Math.round(Math.round((weight / Math.pow(height, 2)) * 10000) * 100) /
       100;
     let value = "";
@@ -13,9 +14,10 @@ export const calculateBmi = (height: number, weight: number) => {
     throw new Error("malformatted parameters");
   }
 };
-
-try {
-  console.log(calculateBmi(Number(process.argv[2]), Number(process.argv[3])));
-} catch (e) {
-  console.log("error: ", e.message);
+if (process.env.NODE_ENV === "cmd") {
+  try {
+    console.log(calculateBmi(Number(process.argv[2]), Number(process.argv[3])));
+  } catch (e) {
+    console.log("error: ", e);
+  }
 }

@@ -1,3 +1,4 @@
+require("dotenv").config();
 interface Result {
   periodLength: number;
   trainingDays: number;
@@ -33,22 +34,24 @@ const parseArguments = (args: Array<string>) => {
   }
 };
 
-const calculateExercise = (target: number, days: Array<number>): Result => {
-  console.log(target, days);
-
+export const calculateExercise = (
+  target: number,
+  days: Array<number>
+): Result => {
   let trainingDays = 0;
   let sum = 0;
   let success = false;
   let rating = 1;
   let ratingDescription = "";
-  let periodLength = days.length;
+  const periodLength = days.length;
+  let average = 0;
   for (let i = 0; i < days.length; i++) {
     if (days[i] > 0) {
       trainingDays++;
       sum += days[i];
     }
   }
-  let average = sum / periodLength;
+  average = sum / periodLength;
   if (average > target) {
     success = true;
     rating = 3;
@@ -72,10 +75,12 @@ const calculateExercise = (target: number, days: Array<number>): Result => {
     target,
   };
 };
-try {
-  const { target, days } = parseArguments(process.argv);
-  console.log(calculateExercise(target, days));
-} catch (e) {
-  console.log("error: ", e.message);
-}
 
+if (process.env.NODE_ENV === "cmd") {
+  try {
+    const { target, days } = parseArguments(process.argv);
+    console.log(calculateExercise(target, days));
+  } catch (e) {
+    console.log("error: ", e);
+  }
+}

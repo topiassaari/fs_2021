@@ -38,9 +38,9 @@ const calculateExercise = (target: number, days: Array<number>): Result => {
 
   let trainingDays = 0;
   let sum = 0;
-  let success: boolean;
-  let rating: number;
-  let ratingDescription: string;
+  let success = false;
+  let rating = 1;
+  let ratingDescription = "";
   let periodLength = days.length;
   for (let i = 0; i < days.length; i++) {
     if (days[i] > 0) {
@@ -79,4 +79,3 @@ try {
   console.log("error: ", e.message);
 }
 
-console.log();

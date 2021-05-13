@@ -1,4 +1,4 @@
-const calculateBmi = (height: number, weight: number) => {
+export const calculateBmi = (height: number, weight: number) => {
   if (!isNaN(Number(height)) && !isNaN(Number(weight))) {
     var bmi =
       Math.round(Math.round((weight / Math.pow(height, 2)) * 10000) * 100) /
@@ -8,9 +8,9 @@ const calculateBmi = (height: number, weight: number) => {
     else if (bmi >= 18.5 && bmi <= 25) value = "normal (healthy weight)";
     else if (bmi >= 25 && bmi <= 30) value = "obese";
     else if (bmi > 30) value = "overweight";
-    return value;
+    return { height, weight, bmi: value };
   } else {
-    throw new Error("those werent numbers dude");
+    throw new Error("malformatted parameters");
   }
 };
 

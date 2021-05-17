@@ -7,7 +7,7 @@ import { Patient } from "../types";
 import axios from "axios";
 
 const SinglePatient = () => {
-  const [{ patientInfo }, dispatch] = useStateValue();
+  const [{ patientInfo, diagnosis }, dispatch] = useStateValue();
   const { id } = useParams<{ id: string }>();
   if (id !== patientInfo.id) {
     React.useEffect(() => {
@@ -58,7 +58,11 @@ const SinglePatient = () => {
               <ul>
                 {entry.diagnosisCodes
                   ? entry.diagnosisCodes.map((code) => {
-                      return <li key={code}>{code}</li>;
+                      return (
+                        <li key={code}>
+                          {code} {diagnosis[code] ? diagnosis[code].name : null}
+                        </li>
+                      );
                     })
                   : null}
               </ul>

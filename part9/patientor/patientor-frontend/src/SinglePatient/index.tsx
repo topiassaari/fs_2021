@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useStateValue } from "../state";
+import { useStateValue, getPatientInfo } from "../state";
 import React from "react";
 import { Icon } from "semantic-ui-react";
 import { apiBaseUrl } from "../constants";
@@ -17,7 +17,7 @@ const SinglePatient = () => {
             `${apiBaseUrl}/patients/${id}`
           );
           console.log("user info fetched");
-          dispatch({ type: "GET_PATIENT_FULL_INFO", payload: fetchedPatient });
+          dispatch(getPatientInfo(fetchedPatient));
         } catch (e) {
           console.error(e.response?.data || "Unknown Error");
         }

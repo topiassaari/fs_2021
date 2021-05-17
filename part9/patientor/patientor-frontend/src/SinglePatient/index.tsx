@@ -3,7 +3,7 @@ import { useStateValue, getPatientInfo } from "../state";
 import React from "react";
 import { Icon } from "semantic-ui-react";
 import { apiBaseUrl } from "../constants";
-import { Patient } from "../types";
+import { Patient, Entry } from "../types";
 import axios from "axios";
 
 const SinglePatient = () => {
@@ -39,6 +39,78 @@ const SinglePatient = () => {
         break;
     }
   };
+  const DiagnosisDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+    return (
+      <div>
+        {entry.diagnosisCodes ? (
+          <div>
+            <h5>diagnosis codes</h5>
+            <ul>
+              {entry.diagnosisCodes.map((code) => {
+                return (
+                  <li key={code}>
+                    {code} {diagnosis[code] ? diagnosis[code].name : null}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : null}
+      </div>
+    );
+  };
+
+  const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+    switch (entry.type) {
+      case "Hospital":
+        return (
+          <div style={{ border: "1px solid black", padding: "8px" }}>
+            <h3>
+              {entry.date} <Icon name="hospital" />
+            </h3>
+            <p>
+              <i>{entry.description}</i>
+            </p>
+            <p>
+              Discharge: {entry.discharge.date} - {entry.discharge.criteria}
+            </p>
+            <DiagnosisDetails entry={entry} />
+          </div>
+        );
+      case "OccupationalHealthcare":
+        return (
+          <div style={{ border: "1px solid black", padding: "8px" }}>
+            <h3>
+              {entry.date} <Icon name="stethoscope" /> {entry.employerName}
+            </h3>
+            <p>
+              <i>{entry.description}</i>
+            </p>
+            {entry.sickLeave ?
+            <p>
+              Sick leave: {entry.sickLeave?.startDate} -{" "}
+              {entry.sickLeave?.endDate}
+            </p> : null}
+            <DiagnosisDetails entry={entry} />
+          </div>
+        );
+      case "HealthCheck":
+        return (
+          <div style={{ border: "1px solid black", padding: "8px" }}>
+            <h3>
+              {entry.date} <Icon name="doctor" />
+            </h3>
+            <p>
+              <i>{entry.description}</i>
+            </p>
+            <p>Health check rating: {entry.healthCheckRating}</p>
+            <DiagnosisDetails entry={entry} />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return patientInfo ? (
     <div className="App">
@@ -54,18 +126,7 @@ const SinglePatient = () => {
         {patientInfo.entries.map((entry) => {
           return (
             <div key={entry.id}>
-              {entry.date} - {entry.description}
-              <ul>
-                {entry.diagnosisCodes
-                  ? entry.diagnosisCodes.map((code) => {
-                      return (
-                        <li key={code}>
-                          {code} {diagnosis[code] ? diagnosis[code].name : null}
-                        </li>
-                      );
-                    })
-                  : null}
-              </ul>
+              <EntryDetails entry={entry} />
             </div>
           );
         })}

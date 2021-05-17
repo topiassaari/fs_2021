@@ -42,11 +42,30 @@ const SinglePatient = () => {
 
   return patientInfo ? (
     <div className="App">
-      <h1>
-        {patientInfo.name} <Icon name={checkGender()} />
-      </h1>
-      <p>dob: {patientInfo.dateOfBirth}</p>
-      <p>occupation: {patientInfo.occupation}</p>
+      <div>
+        <h1>
+          {patientInfo.name} <Icon name={checkGender()} />
+        </h1>
+        <p>dob: {patientInfo.dateOfBirth}</p>
+        <p>occupation: {patientInfo.occupation}</p>
+      </div>
+      <div style={{ marginTop: "16px" }}>
+        <h2>entries</h2>
+        {patientInfo.entries.map((entry) => {
+          return (
+            <div key={entry.id}>
+              {entry.date} - {entry.description}
+              <ul>
+                {entry.diagnosisCodes
+                  ? entry.diagnosisCodes.map((code) => {
+                      return <li key={code}>{code}</li>;
+                    })
+                  : null}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
     </div>
   ) : null;
 };

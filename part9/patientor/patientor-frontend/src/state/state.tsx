@@ -10,7 +10,13 @@ export type State = {
 
 const initialState: State = {
   patients: {},
-  patientInfo: { id: "", name: "", occupation: "", gender: Gender.Other },
+  patientInfo: {
+    id: "",
+    name: "",
+    occupation: "",
+    gender: Gender.Other,
+    entries: [],
+  },
 };
 
 export const StateContext = createContext<[State, React.Dispatch<Action>]>([

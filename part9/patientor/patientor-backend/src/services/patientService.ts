@@ -1,5 +1,5 @@
 import patients from "../../data/patients";
-import { Patient, NewPatient } from "../types";
+import { Patient, NewPatient, Entry, NewEntry } from "../types";
 import { v1 as uuid } from "uuid";
 const id = uuid();
 
@@ -31,8 +31,24 @@ const addPatient = (patient: NewPatient): Patient => {
   return newPatient;
 };
 
+const addEntry = (id: string, newEntry: NewEntry): Patient | undefined => {
+  let patient = patients.find((p) => p.id === id);
+  const entry: Entry = { ...newEntry, id: uuid() };
+  if (patient) {
+    patient = {
+      ...patient,
+      entries: patient?.entries?.concat(entry),
+    };
+    patients.concat(patient);
+    return patient;
+  } else {
+    return undefined;
+  }
+};
+
 export default {
   getEntries,
   addPatient,
   getEntry,
+  addEntry,
 };

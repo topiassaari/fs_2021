@@ -44,18 +44,35 @@ interface HealthCheckEntry extends BaseEntry {
 }
 interface HospitalEntry extends BaseEntry {
   type: "Hospital";
-  discharge: { date: string; criteria: string };
+  discharge: Discharge;
 }
 interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare";
   employerName: string;
-  sickLeave?: {
-    startDate: string;
-    endDate: string;
-  };
+  sickLeave?: SickLeave;
 }
 
 export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
+
+export interface SickLeave {
+  startDate: string;
+  endDate: string;
+}
+export interface Discharge {
+  date: string;
+  criteria: string;
+}
+
+export enum Type {
+  HealthCheck = "HealthCheck",
+  OccupationalHealthCare = "OccupationalHealthcare",
+  Hospital = "Hospital",
+}
+type DistributiveOmit<T, K extends keyof any> = T extends any
+  ? Omit<T, K>
+  : never;
+export type NewBaseEntry = Omit<BaseEntry, "id">;
+export type NewEntry = DistributiveOmit<Entry, "id">;

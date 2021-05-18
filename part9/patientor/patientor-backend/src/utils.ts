@@ -24,7 +24,7 @@ type BaseEntryFields = {
   date: unknown;
   specialist: unknown;
   diagnosisCodes?: unknown;
-  type?: unknown;
+  type: unknown;
 };
 
 export const toNewPatient = ({
@@ -49,11 +49,13 @@ const toNewBaseEntry = ({
   date,
   specialist,
   diagnosisCodes,
+  type,
 }: BaseEntryFields): NewBaseEntry => {
   const newBaseEntry: NewBaseEntry = {
     date: parseDate(date),
     description: parseDescription(description),
     specialist: parseSpecialist(specialist),
+    type: parseType(type),
   };
 
   if (diagnosisCodes) {
@@ -179,6 +181,14 @@ const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
     throw new Error("health check rating missing or wrong");
   }
   return healthCheckRating;
+};
+const parseType = (type: any): Type => {
+  if (!Object.values(Type).includes(type)) {
+    throw new Error("type missing or wrong");
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return type;
 };
 const isHealthCheckRating = (param: any): param is HealthCheckRating => {
   return Object.values(HealthCheckRating).includes(param);

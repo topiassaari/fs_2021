@@ -5,10 +5,10 @@ import patientService from "../services/patientService";
 const router = express.Router();
 
 router.get("/", (_req, res) => {
-  res.send(patientService.getEntries());
+  res.send(patientService.getPatients());
 });
 router.get("/:id", (req, res) => {
-  const patient = patientService.getEntry(req.params.id);
+  const patient = patientService.getPatient(req.params.id);
   if (patient) {
     res.send(patient);
   } else {
@@ -28,7 +28,7 @@ router.post("/", (req, res) => {
 
 router.post("/:id/entries", (req, res) => {
   try {
-    const entry = toNewEntry(req.body.entry);
+    const entry = toNewEntry(req.body);
 
     const added = patientService.addEntry(req.params.id, entry);
     res.json(added);

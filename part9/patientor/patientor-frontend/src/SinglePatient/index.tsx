@@ -1,36 +1,60 @@
 import { useParams } from "react-router-dom";
-import { useStateValue, getPatientInfo } from "../state";
+import { useStateValue, updatePatient } from "../state";
 import React from "react";
-import { Icon } from "semantic-ui-react";
+import { Icon, Button } from "semantic-ui-react";
 import { apiBaseUrl } from "../constants";
-import { Patient, Entry } from "../types";
+import { Patient, Entry, NewEntry } from "../types";
 import axios from "axios";
+import AddEntryModal from "../AddEntryModal";
 
 const SinglePatient = () => {
-  const [{ patientInfo, diagnosis }, dispatch] = useStateValue();
+  const [{ currentPatient, diagnosis }, dispatch] = useStateValue();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | undefined>();
+
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
   const { id } = useParams<{ id: string }>();
-  if (id !== patientInfo.id) {
-    React.useEffect(() => {
-      const getPatient = async (id: string) => {
-        try {
-          const { data: fetchedPatient } = await axios.get<Patient>(
-            `${apiBaseUrl}/patients/${id}`
-          );
-          console.log("user info fetched");
-          dispatch(getPatientInfo(fetchedPatient));
-        } catch (e) {
-          console.error(e.response?.data || "Unknown Error");
-        }
-      };
-      void getPatient(id);
-    }, [dispatch]);
-  }
+
+  const getPatientDetails = async (id: string) => {
+    if (currentPatient.id !== id)
+      try {
+        const { data: fetchedPatient } = await axios.get<Patient>(
+          `${apiBaseUrl}/patients/${id}`
+        );
+        console.log("user info fetched");
+        dispatch(updatePatient(fetchedPatient));
+      } catch (e) {
+        console.error(e);
+      }
+  };
+  React.useEffect(() => {
+    void getPatientDetails(id);
+  }, [id, dispatch]);
+
+  const submitNewOccupationalHealthCare = async (entry: NewEntry) => {
+    const newEntry = { ...entry };
+    try {
+      const { data: fetchedPatient } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${currentPatient.id}/entries`,
+        newEntry
+      );
+      dispatch(updatePatient(fetchedPatient));
+      closeModal();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const checkGender = () => {
-    switch (patientInfo.gender) {
+    switch (currentPatient.gender) {
       case "male":
         return "mars";
-        break;
       case "female":
         return "venus";
       case "other":
@@ -86,11 +110,12 @@ const SinglePatient = () => {
             <p>
               <i>{entry.description}</i>
             </p>
-            {entry.sickLeave ?
-            <p>
-              Sick leave: {entry.sickLeave?.startDate} -{" "}
-              {entry.sickLeave?.endDate}
-            </p> : null}
+            {entry.sickLeave ? (
+              <p>
+                Sick leave: {entry.sickLeave?.startDate} -{" "}
+                {entry.sickLeave?.endDate}
+              </p>
+            ) : null}
             <DiagnosisDetails entry={entry} />
           </div>
         );
@@ -112,24 +137,33 @@ const SinglePatient = () => {
     }
   };
 
-  return patientInfo ? (
+  return currentPatient ? (
     <div className="App">
       <div>
         <h1>
-          {patientInfo.name} <Icon name={checkGender()} />
+          {currentPatient.name} <Icon name={checkGender()} />
         </h1>
-        <p>dob: {patientInfo.dateOfBirth}</p>
-        <p>occupation: {patientInfo.occupation}</p>
+        <p>dob: {currentPatient.dateOfBirth}</p>
+        <p>occupation: {currentPatient.occupation}</p>
       </div>
       <div style={{ marginTop: "16px" }}>
         <h2>entries</h2>
-        {patientInfo.entries.map((entry) => {
+        {currentPatient.entries?.map((entry) => {
           return (
             <div key={entry.id}>
               <EntryDetails entry={entry} />
             </div>
           );
         })}
+        <AddEntryModal
+          modalOpen={modalOpen}
+          onSubmit={submitNewOccupationalHealthCare}
+          error={error}
+          onClose={closeModal}
+        />
+        <Button onClick={openModal}>
+          Add New Occupational Health Care Entry
+        </Button>
       </div>
     </div>
   ) : null;

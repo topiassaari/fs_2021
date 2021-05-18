@@ -7,7 +7,7 @@ export type Action =
       payload: Patient[];
     }
   | {
-      type: "GET_PATIENT_FULL_INFO";
+      type: "SET_CURRENT_PATIENT";
       payload: Patient;
     }
   | {
@@ -17,6 +17,10 @@ export type Action =
   | {
       type: "SET_DIAGNOSIS";
       payload: Diagnosis[];
+    }
+  | {
+      type: "UPDATE_PATIENT";
+      payload: Patient;
     };
 
 export const setPatientList = (patients: Patient[]): Action => {
@@ -25,15 +29,21 @@ export const setPatientList = (patients: Patient[]): Action => {
     payload: patients,
   };
 };
-export const getPatientInfo = (patient: Patient): Action => {
+export const setPatientInfo = (patient: Patient): Action => {
   return {
-    type: "GET_PATIENT_FULL_INFO",
+    type: "SET_CURRENT_PATIENT",
     payload: patient,
   };
 };
 export const addPatient = (patient: Patient): Action => {
   return {
     type: "ADD_PATIENT",
+    payload: patient,
+  };
+};
+export const updatePatient = (patient: Patient): Action => {
+  return {
+    type: "UPDATE_PATIENT",
     payload: patient,
   };
 };
@@ -57,10 +67,22 @@ export const reducer = (state: State, action: Action): State => {
           ...state.patients,
         },
       };
-    case "GET_PATIENT_FULL_INFO":
+    case "SET_CURRENT_PATIENT":
       return {
         ...state,
-        patientInfo: action.payload,
+        currentPatient: action.payload,
+      };
+    case "UPDATE_PATIENT":
+      return {
+        ...state,
+        patients: {
+          ...state.patients,
+          [action.payload.id]: {
+            ...state.patients[action.payload.id],
+            ...action.payload,
+          },
+        },
+        currentPatient: action.payload,
       };
     case "ADD_PATIENT":
       return {

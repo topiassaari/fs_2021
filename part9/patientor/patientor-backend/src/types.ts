@@ -22,8 +22,14 @@ export enum Gender {
   Female = "female",
   Other = "other",
 }
+export enum Type {
+  HealthCheck = "HealthCheck",
+  OccupationalHealthCare = "OccupationalHealthcare",
+  Hospital = "Hospital",
+}
 
 interface BaseEntry {
+  type: Type;
   id: string;
   description: string;
   date: string;
@@ -39,15 +45,15 @@ export enum HealthCheckRating {
 }
 
 interface HealthCheckEntry extends BaseEntry {
-  type: "HealthCheck";
+  type: Type.HealthCheck;
   healthCheckRating: HealthCheckRating;
 }
 interface HospitalEntry extends BaseEntry {
-  type: "Hospital";
+  type: Type.Hospital;
   discharge: Discharge;
 }
 interface OccupationalHealthcareEntry extends BaseEntry {
-  type: "OccupationalHealthcare";
+  type: Type.OccupationalHealthCare;
   employerName: string;
   sickLeave?: SickLeave;
 }
@@ -66,11 +72,6 @@ export interface Discharge {
   criteria: string;
 }
 
-export enum Type {
-  HealthCheck = "HealthCheck",
-  OccupationalHealthCare = "OccupationalHealthcare",
-  Hospital = "Hospital",
-}
 type DistributiveOmit<T, K extends keyof any> = T extends any
   ? Omit<T, K>
   : never;

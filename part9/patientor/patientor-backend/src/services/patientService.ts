@@ -3,7 +3,7 @@ import { Patient, NewPatient, Entry, NewEntry } from "../types";
 import { v1 as uuid } from "uuid";
 const id = uuid();
 
-const getEntries = (): Omit<Patient, "ssn">[] => {
+const getPatients = (): Omit<Patient, "ssn">[] => {
   return patients.map(
     ({ id, name, dateOfBirth, gender, occupation, entries }) => ({
       id,
@@ -16,7 +16,7 @@ const getEntries = (): Omit<Patient, "ssn">[] => {
   );
 };
 
-const getEntry = (id: string): Patient | undefined => {
+const getPatient = (id: string): Patient | undefined => {
   const patient = patients.find((p) => p.id === id);
   return patient;
 };
@@ -32,23 +32,23 @@ const addPatient = (patient: NewPatient): Patient => {
 };
 
 const addEntry = (id: string, newEntry: NewEntry): Patient | undefined => {
-  let patient = patients.find((p) => p.id === id);
+  const patient = patients.find((p) => p.id === id);
   const entry: Entry = { ...newEntry, id: uuid() };
   if (patient) {
-    patient = {
+    const newPatient = {
       ...patient,
-      entries: patient?.entries?.concat(entry),
+      entries: patient.entries?.concat(entry),
     };
-    patients.concat(patient);
-    return patient;
+    patients.concat(newPatient);
+    return newPatient;
   } else {
     return undefined;
   }
 };
 
 export default {
-  getEntries,
+  getPatients,
   addPatient,
-  getEntry,
+  getPatient,
   addEntry,
 };

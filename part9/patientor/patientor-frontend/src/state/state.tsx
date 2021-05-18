@@ -5,15 +5,17 @@ import { Action } from "./reducer";
 
 export type State = {
   patients: { [id: string]: Patient };
-  patientInfo: Patient;
+  currentPatient: Patient;
   diagnosis: { [code: string]: Diagnosis };
 };
 
 const initialState: State = {
   patients: {},
-  patientInfo: {
+  currentPatient: {
     id: "",
     name: "",
+    dateOfBirth: "",
+    ssn: "",
     occupation: "",
     gender: Gender.Other,
     entries: [],
